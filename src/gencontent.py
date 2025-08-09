@@ -16,28 +16,28 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
 
 def generate_page(from_path, template_path, dest_path, basepath):
     print(f" * {from_path} {template_path} -> {dest_path}")
-    with open(from_path, "r") as from_file:
-        markdown_content = from_file.read()
+    from_file = open(from_path, "r")
+    markdown_content = from_file.read()
+    from_file.close()
 
-    with open(template_path, "r") as template_file:
-        template = template_file.read()
+    template_file = open(template_path, "r")
+    template = template_file.read()
+    template_file.close()
 
     node = markdown_to_html_node(markdown_content)
     html = node.to_html()
 
-    # Replace basepath in links and images
-    html = html.replace('href="/', f'href="{basepath}')
-    html = html.replace('src="/', f'src="{basepath}')
-
     title = extract_title(markdown_content)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
+    template = template.replace('href="/', 'href="' + basepath)
+    template = template.replace('src="/', 'src="' + basepath)
 
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
-    with open(dest_path, "w") as to_file:
-        to_file.write(template)
+    to_file = open(dest_path, "w")
+    to_file.write(template)
 
 
 def extract_title(md):
